@@ -41,6 +41,7 @@ public class AuctionService {
             existingAuction.setEndTime(auction.getEndTime());
             existingAuction.setDescription(auction.getDescription());
             existingAuction.setHighestBidder(auction.getHighestBidder());
+            existingAuction.setIsSold(auction.getIsSold());
 
             return auctionRepository.save(existingAuction);
         } else {

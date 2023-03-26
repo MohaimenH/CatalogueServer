@@ -1,9 +1,10 @@
-package com.example.catalogueserver.entity;
+package com.example.catalogueserver.factory;
 
 import jakarta.persistence.*;
 
 @Entity
-public class Auction {
+@Table(name = "auction")
+public class DutchAuction implements AuctionI {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -11,30 +12,28 @@ public class Auction {
     private Long id;
     private String name;
     private Double price;
-    private String type;
-    private String endTime;
+    private String type = "DUTCH";
+    private String endTime = null;
     private String description;
     private String highestBidder;
     private Boolean isSold = false;
     private Double expeditedShipping;
 
-    public Auction() {}
+    public DutchAuction() {}
 
-    public Auction(String name, Double price, String type, String endTime, String description, Double expeditedShipping) {
+    public DutchAuction(String name, Double price, String description, Double expeditedShipping) {
         this.name = name;
         this.price = price;
-        this.type = type;
-        this.endTime = endTime;
         this.description = description;
         this.isSold = false;
         this.expeditedShipping = expeditedShipping;
     }
 
-    public Auction(Auction auction) {
+    public DutchAuction(AuctionI auction) {
         this.name = auction.getName();
         this.price = auction.getPrice();
-        this.type = auction.getType();
-        this.endTime = auction.getEndTime();
+        this.type = "DUTCH";
+        this.endTime = null;
         this.description = auction.getDescription();
         this.highestBidder = auction.getHighestBidder();
         this.isSold = auction.getIsSold();

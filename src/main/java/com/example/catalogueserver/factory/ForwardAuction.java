@@ -1,9 +1,10 @@
-package com.example.catalogueserver.entity;
+package com.example.catalogueserver.factory;
 
 import jakarta.persistence.*;
 
 @Entity
-public class Auction {
+@Table(name = "auction")
+public class ForwardAuction implements AuctionI {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -11,29 +12,29 @@ public class Auction {
     private Long id;
     private String name;
     private Double price;
-    private String type;
+    private String type = "FORWARD";
     private String endTime;
     private String description;
     private String highestBidder;
     private Boolean isSold = false;
     private Double expeditedShipping;
 
-    public Auction() {}
+    public ForwardAuction() {}
 
-    public Auction(String name, Double price, String type, String endTime, String description, Double expeditedShipping) {
+    public ForwardAuction(String name, Double price, String endTime, String description, Double expeditedShipping) {
         this.name = name;
         this.price = price;
-        this.type = type;
         this.endTime = endTime;
         this.description = description;
         this.isSold = false;
         this.expeditedShipping = expeditedShipping;
+
     }
 
-    public Auction(Auction auction) {
+    public ForwardAuction(AuctionI auction) {
         this.name = auction.getName();
         this.price = auction.getPrice();
-        this.type = auction.getType();
+        this.type = "FORWARD";
         this.endTime = auction.getEndTime();
         this.description = auction.getDescription();
         this.highestBidder = auction.getHighestBidder();
@@ -114,4 +115,5 @@ public class Auction {
     public void setExpeditedShipping(Double expeditedShipping) {
         this.expeditedShipping = expeditedShipping;
     }
+
 }

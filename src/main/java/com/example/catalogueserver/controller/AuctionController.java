@@ -2,6 +2,8 @@ package com.example.catalogueserver.controller;
 
 import com.example.catalogueserver.entity.Auction;
 import com.example.catalogueserver.facade.AuctionFacade;
+import com.example.catalogueserver.factory.AuctionFactory;
+import com.example.catalogueserver.factory.AuctionI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ public class AuctionController {
     @PostMapping("/")
     public ResponseEntity<Auction> createAuction(@RequestBody Auction auction) {
         logger.info("Received Post Request for Auction");
-        Auction createdAuction = auctionFacade.createAuction(auction);
+        AuctionI auctionFactory = AuctionFactory.createAuction(auction);
+        Auction auctionFromFactory = new Auction(auctionFactory.getName(), auctionFactory.getPrice(), auctionFactory.getType(), auctionFactory.getEndTime(), auctionFactory.getDescription(), auctionFactory.getExpeditedShipping());
+        Auction createdAuction = auctionFacade.createAuction(auctionFromFactory);
         return new ResponseEntity<>(createdAuction, HttpStatus.CREATED);
     }
 
