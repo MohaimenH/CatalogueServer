@@ -2,6 +2,8 @@ package com.example.catalogueserver.entity;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 public class Auction {
 
@@ -17,6 +19,7 @@ public class Auction {
     private String highestBidder;
     private Boolean isSold = false;
     private Double expeditedShipping;
+    private String uuid = String.valueOf(UUID.randomUUID());
 
     public Auction() {}
 
@@ -113,5 +116,13 @@ public class Auction {
 
     public void setExpeditedShipping(Double expeditedShipping) {
         this.expeditedShipping = expeditedShipping;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

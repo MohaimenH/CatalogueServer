@@ -48,4 +48,8 @@ public class AuctionService {
             return auctionRepository.save(auction);
         }
     }
+
+    public Optional<Auction> getAuctionByUUID(String uuid) {
+        return auctionRepository.findByUuid(uuid);
+    }
 }

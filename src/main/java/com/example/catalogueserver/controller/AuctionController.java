@@ -35,12 +35,16 @@ public class AuctionController {
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> getAuctionTest() {
-        logger.info("Received Test Request for Auction");
-        return new ResponseEntity<>("Hello Auction Test", HttpStatus.OK);
-    }
+    @GetMapping("/uuid/{uuid}")
+    public ResponseEntity<Auction> getPaymentByUUID(@PathVariable String uuid) {
+        Optional<Auction> auctionOptional = auctionFacade.getPaymentByUUID(uuid);
 
+        if (auctionOptional.isPresent()) {
+            return new ResponseEntity<>(auctionOptional.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Auction> getAuctionById(@PathVariable Long id) {
         Optional<Auction> auctionOptional = auctionFacade.getAuctionById(id);

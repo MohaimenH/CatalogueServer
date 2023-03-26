@@ -32,4 +32,8 @@ public class AuctionFacade {
     public void deleteAuction(Long id) {
         auctionService.deleteAuction(id);
     }
+
+    public Optional<Auction> getPaymentByUUID(String UUID) {
+        return auctionService.getAuctionByUUID(UUID);
+    }
 }
