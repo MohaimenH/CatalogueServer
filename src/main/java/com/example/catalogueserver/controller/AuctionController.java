@@ -75,12 +75,12 @@ public class AuctionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<Auction> getAuctionById(@PathVariable Long id) {
-        Optional<Auction> auctionOptional = auctionFacade.getAuctionById(id);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<Auction> getAuctionById(@PathVariable String uuid) {
+        Optional<Auction> fetchedAuction = auctionFacade.getAuctionByUUID(uuid);
 
-        if (auctionOptional.isPresent()) {
-            return new ResponseEntity<>(auctionOptional.get(), HttpStatus.OK);
+        if (fetchedAuction.isPresent()) {
+            return new ResponseEntity<>(fetchedAuction.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
