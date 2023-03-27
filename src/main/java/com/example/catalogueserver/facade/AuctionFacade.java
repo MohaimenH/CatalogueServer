@@ -33,7 +33,7 @@ public class AuctionFacade {
         auctionService.deleteAuction(id);
     }
 
-    public Optional<Auction> getPaymentByUUID(String UUID) {
+    public Optional<Auction> getAuctionByUUID(String UUID) {
         return auctionService.getAuctionByUUID(UUID);
     }
 }

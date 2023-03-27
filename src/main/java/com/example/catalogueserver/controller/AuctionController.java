@@ -4,6 +4,7 @@ import com.example.catalogueserver.entity.Auction;
 import com.example.catalogueserver.facade.AuctionFacade;
 import com.example.catalogueserver.factory.AuctionFactory;
 import com.example.catalogueserver.factory.AuctionI;
+import com.example.catalogueserver.type.Bid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +37,40 @@ public class AuctionController {
     }
 
     @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<Auction> getPaymentByUUID(@PathVariable String uuid) {
-        Optional<Auction> auctionOptional = auctionFacade.getPaymentByUUID(uuid);
+    public ResponseEntity<Auction> getAuctionByUUID(@PathVariable String uuid) {
+        Optional<Auction> auctionOptional = auctionFacade.getAuctionByUUID(uuid);
 
         if (auctionOptional.isPresent()) {
             return new ResponseEntity<>(auctionOptional.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/bid/")
+    public ResponseEntity<Auction> bid(@RequestBody Bid bid) {
+        Optional<Auction> auction = auctionFacade.getAuctionByUUID(bid.getUuid());
+
+        if (auction.isPresent()) {
+            auction.get().setPrice(bid.getAmount());
+            auction.get().setHighestBidder(bid.getBidder());
+            Auction updatedAuction = auctionFacade.updateAuction(auction.get().getId(), auction.get());
+            return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
+
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PutMapping("/{uuid}/buyNow")
+    public ResponseEntity<Auction> bid(@PathVariable String uuid) {
+
+        Optional<Auction> auction = auctionFacade.getAuctionByUUID(uuid);
+
+        if (auction.isPresent()) {
+            auction.get().setIsSold(true);
+            Auction updatedAuction = auctionFacade.updateAuction(auction.get().getId(), auction.get());
+            return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
+
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -56,10 +86,16 @@ public class AuctionController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Auction> updateAuction(@PathVariable Long id, @RequestBody Auction auction) {
-        Auction updatedAuction = auctionFacade.updateAuction(id, auction);
-        return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<Auction> updateAuction(@PathVariable String uuid, @RequestBody Auction auction) {
+        Optional<Auction> fetchedAuction = auctionFacade.getAuctionByUUID(uuid);
+
+        if (fetchedAuction.isPresent()) {
+            Auction updatedAuction = auctionFacade.updateAuction(fetchedAuction.get().getId(), auction);
+            return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
