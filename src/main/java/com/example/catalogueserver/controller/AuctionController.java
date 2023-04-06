@@ -5,16 +5,26 @@ import com.example.catalogueserver.facade.AuctionFacade;
 import com.example.catalogueserver.factory.AuctionFactory;
 import com.example.catalogueserver.factory.AuctionI;
 import com.example.catalogueserver.type.Bid;
+import com.example.catalogueserver.type.BuyNow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/auctions")
 public class AuctionController {
     private final Logger logger = LoggerFactory.getLogger(AuctionController.class);
@@ -47,27 +57,38 @@ public class AuctionController {
         }
     }
 
-    @PutMapping("/bid/")
-    public ResponseEntity<Auction> bid(@RequestBody Bid bid) {
+    @PostMapping("/bid")
+    public ResponseEntity<Auction> bid(@RequestBody Bid bid) throws ParseException {
+        logger.info("Got my information!");
         Optional<Auction> auction = auctionFacade.getAuctionByUUID(bid.getUuid());
 
         if (auction.isPresent()) {
+            // Create a formatter for the input date string
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+            // Parse the date string into a LocalDateTime object
+            LocalDateTime dateTime = LocalDateTime.parse(auction.get().getEndTime(), formatter);
+
+            if (dateTime.compareTo(LocalDateTime.now()) < 0) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             auction.get().setPrice(bid.getAmount());
             auction.get().setHighestBidder(bid.getBidder());
             Auction updatedAuction = auctionFacade.updateAuction(auction.get().getId(), auction.get());
+
             return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
 
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PutMapping("/{uuid}/buyNow")
-    public ResponseEntity<Auction> bid(@PathVariable String uuid) {
 
-        Optional<Auction> auction = auctionFacade.getAuctionByUUID(uuid);
+    @PostMapping("/buy")
+    public ResponseEntity<Auction> buy(@RequestBody BuyNow buyNow) {
+
+        Optional<Auction> auction = auctionFacade.getAuctionByUUID(buyNow.getUuid());
 
         if (auction.isPresent()) {
             auction.get().setIsSold(true);
+            auction.get().setHighestBidder(buyNow.getUsername());
             Auction updatedAuction = auctionFacade.updateAuction(auction.get().getId(), auction.get());
             return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
 
